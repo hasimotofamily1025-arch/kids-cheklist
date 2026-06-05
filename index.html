@@ -3,7 +3,6 @@
 <head>
   <meta charset="utf-8">
   <title>キッズ・チェックリスト</title>
-  <!-- アプリ化（URLバー非表示）のための設定 -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -28,19 +27,16 @@
   <div id="loading-view" class="loading">スプレッドシートからデータをよみこみ中...</div>
 
   <div class="grid-container" id="app-container" style="display: none;">
-    <!-- 長女（花） -->
     <div class="child-card">
       <div class="child-name">花</div>
       <div class="percent" id="per-花">0%</div>
       <div id="tasks-花" class="task-list"></div>
     </div>
-    <!-- 長男（碧） -->
     <div class="child-card">
       <div class="child-name">碧</div>
       <div class="percent" id="per-碧">0%</div>
       <div id="tasks-碧" class="task-list"></div>
     </div>
-    <!-- 次男（瑞） -->
     <div class="child-card">
       <div class="child-name">瑞</div>
       <div class="percent" id="per-瑞">0%</div>
@@ -49,8 +45,8 @@
   </div>
 
   <script>
-    // ⚠️【最重要】ここに以前使っていたGASのWebアプリURL（末尾が /exec のもの）を貼り付けてください
-    const GAS_URL = https://script.google.com/macros/s/AKfycbwTTXf0ilBXmVZfnrU9pW09l7ZgHOFuq43rL87hd5pBVvYtrV11Cv1yj4vPlFfE7sg/exec
+    // URLをしっかりとダブルクォーテーションで囲みました
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbwTTXf0ilBXmVZfnrU9pW09l7ZgHOFuq43rL87hd5pBVvYtrV11Cv1yj4vPlFfE7sg/exec";
 
     const children = ['花', '碧', '瑞'];
 
@@ -58,7 +54,6 @@
       fetchDataFromSpreadsheet();
     };
 
-    // 1. スプレッドシートから最新データを裏側で読み込む
     function fetchDataFromSpreadsheet() {
       fetch(GAS_URL)
         .then(response => response.json())
@@ -70,7 +65,6 @@
             const container = document.getElementById('tasks-' + child);
             container.innerHTML = '';
             
-            // 各子供のタスクを生成
             if (data[child]) {
               data[child].forEach(task => {
                 const checkedAttr = task.checked ? 'checked' : '';
@@ -91,11 +85,9 @@
         });
     }
 
-    // 2. チェックを外したり付けたりした瞬間にGAS（スプレッドシート）へ即時送信
     function toggleTask(childName, taskName, isChecked) {
       updatePercent(childName);
 
-      // 裏側でGASへ送信（画面はリロードされないので一瞬で保存されます）
       fetch(GAS_URL, {
         method: 'POST',
         mode: 'no-cors',
