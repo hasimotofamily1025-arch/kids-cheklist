@@ -3,82 +3,105 @@
 <head>
   <meta charset="utf-8">
   <title>キッズ・チェックリスト</title>
+  <!-- アプリ化（URLバー非表示）のための設定 -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   
   <style>
-    /* 以前のCSSスタイルをそのままここにペースト */
-    body { font-family: sans-serif; background-color: #eef9f1; padding: 20px; text-align: center; }
+    body { font-family: sans-serif; background-color: #eef9f1; padding: 20px; text-align: center; color: #4a3f35; }
+    h1 { font-size: 28px; margin-bottom: 20px; }
     .grid-container { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
-    .child-card { background: white; border: 4px solid #4a3f35; border-radius: 20px; padding: 20px; }
-    .child-name { font-size: 24px; font-weight: bold; background: #4a3f35; color: white; padding: 5px; border-radius: 10px; }
-    .task-item { display: flex; align-items: center; background: #fcf8f2; margin: 10px 0; padding: 10px; border-radius: 10px; border: 2px solid #4a3f35; cursor: pointer; }
-    .task-item input { width: 24px; height: 24px; margin-right: 12px; }
-    .percent { font-size: 20px; font-weight: bold; margin: 10px 0; color: #ff6b81; }
+    .child-card { background: white; border: 4px solid #4a3f35; border-radius: 20px; padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+    .child-name { font-size: 24px; font-weight: bold; background: #4a3f35; color: white; padding: 8px; border-radius: 12px; margin-bottom: 10px; }
+    .percent { font-size: 22px; font-weight: bold; margin: 10px 0; color: #ff6b81; }
+    .task-list { text-align: left; }
+    .task-item { display: flex; align-items: center; background: #fcf8f2; margin: 10px 0; padding: 12px; border-radius: 10px; border: 2px solid #4a3f35; cursor: pointer; font-size: 18px; }
+    .task-item input { width: 24px; height: 24px; margin-right: 12px; cursor: pointer; }
+    .loading { font-size: 20px; font-weight: bold; margin-top: 50px; }
   </style>
 </head>
 <body>
 
-  <h1>きょうのチェックリスト (GitHub版)</h1>
+  <h1>きょうのチェックリスト</h1>
+  <div id="loading-view" class="loading">スプレッドシートからデータをよみこみ中...</div>
 
-  <div class="grid-container">
+  <div class="grid-container" id="app-container" style="display: none;">
+    <!-- 長女（花） -->
     <div class="child-card">
       <div class="child-name">花</div>
       <div class="percent" id="per-花">0%</div>
-      <div class="task-list" id="tasks-花"></div>
+      <div id="tasks-花" class="task-list"></div>
     </div>
+    <!-- 長男（碧） -->
     <div class="child-card">
       <div class="child-name">碧</div>
       <div class="percent" id="per-碧">0%</div>
-      <div class="task-list" id="tasks-碧"></div>
+      <div id="tasks-碧" class="task-list"></div>
     </div>
+    <!-- 次男（瑞） -->
     <div class="child-card">
       <div class="child-name">瑞</div>
       <div class="percent" id="per-瑞">0%</div>
-      <div class="task-list" id="tasks-次男"></div>
+      <div id="tasks-瑞" class="task-list"></div>
     </div>
   </div>
 
   <script>
-    // 実験用の固定タスク（本来はSettingsシートから取っていたもの）
-    const presetTasks = ['あさごはんをたべる', 'はみがきをする', 'しゅくだい', 'おふろにいる'];
+    // ⚠️【最重要】ここに以前使っていたGASのWebアプリURL（末尾が /exec のもの）を貼り付けてください
+    const GAS_URL = "ここにGASのウェブアプリURLを貼り付け";
+
     const children = ['花', '碧', '瑞'];
 
     window.onload = function() {
-      // 日付が変わっていたら前日のローカルデータをリセットする仕組み
-      const todayStr = new Date().toLocaleDateString();
-      if (localStorage.getItem('lastOpenDate') !== todayStr) {
-        localStorage.clear(); // 全リセット
-        localStorage.setItem('lastOpenDate', todayStr);
-      }
-
-      // 画面の構築
-      children.forEach(child => {
-        const container = document.getElementById('tasks-' + child);
-        container.innerHTML = '';
-        
-        presetTasks.forEach((taskName, index) => {
-          // 保存されたチェック状態をブラウザから読み出す
-          const isChecked = localStorage.getItem(`${child}-${taskName}`) === 'true';
-          const checkedAttr = isChecked ? 'checked' : '';
-          
-          container.innerHTML += `
-            <label class="task-item">
-              <input type="checkbox" ${checkedAttr} onchange="toggleTask('${child}', '${taskName}', this.checked)">
-              <span>${taskName}</span>
-            </label>
-          `;
-        });
-        updatePercent(child);
-      });
+      fetchDataFromSpreadsheet();
     };
 
+    // 1. スプレッドシートから最新データを裏側で読み込む
+    function fetchDataFromSpreadsheet() {
+      fetch(GAS_URL)
+        .then(response => response.json())
+        .then(data => {
+          document.getElementById('loading-view').style.display = 'none';
+          document.getElementById('app-container').style.display = 'grid';
+          
+          children.forEach(child => {
+            const container = document.getElementById('tasks-' + child);
+            container.innerHTML = '';
+            
+            // 各子供のタスクを生成
+            if (data[child]) {
+              data[child].forEach(task => {
+                const checkedAttr = task.checked ? 'checked' : '';
+                container.innerHTML += `
+                  <label class="task-item">
+                    <input type="checkbox" ${checkedAttr} onchange="toggleTask('${child}', '${task.name}', this.checked)">
+                    <span>${task.name}</span>
+                  </label>
+                `;
+              });
+            }
+            updatePercent(child);
+          });
+        })
+        .catch(err => {
+          document.getElementById('loading-view').innerText = 'データのよみこみに失敗しました。URLを確認してください。';
+          console.error(err);
+        });
+    }
+
+    // 2. チェックを外したり付けたりした瞬間にGAS（スプレッドシート）へ即時送信
     function toggleTask(childName, taskName, isChecked) {
-      // ブラウザの高速メモリに即時保存（タップの瞬間にデータが固定される）
-      localStorage.setItem(`${childName}-${taskName}`, isChecked);
       updatePercent(childName);
+
+      // 裏側でGASへ送信（画面はリロードされないので一瞬で保存されます）
+      fetch(GAS_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ child: childName, task: taskName, checked: isChecked })
+      });
     }
 
     function updatePercent(childName) {
