@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <title>キッズ・チェックリスト</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  <style>
+    /* 以前のCSSスタイルをそのままここにペースト */
+    body { font-family: sans-serif; background-color: #eef9f1; padding: 20px; text-align: center; }
+    .grid-container { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+    .child-card { background: white; border: 4px solid #4a3f35; border-radius: 20px; padding: 20px; }
+    .child-name { font-size: 24px; font-weight: bold; background: #4a3f35; color: white; padding: 5px; border-radius: 10px; }
+    .task-item { display: flex; align-items: center; background: #fcf8f2; margin: 10px 0; padding: 10px; border-radius: 10px; border: 2px solid #4a3f35; cursor: pointer; }
+    .task-item input { width: 24px; height: 24px; margin-right: 12px; }
+    .percent { font-size: 20px; font-weight: bold; margin: 10px 0; color: #ff6b81; }
+  </style>
+</head>
+<body>
+
+  <h1>きょうのチェックリスト (GitHub版)</h1>
+
+  <div class="grid-container">
+    <div class="child-card">
+      <div class="child-name">花</div>
+      <div class="percent" id="per-花">0%</div>
+      <div class="task-list" id="tasks-花"></div>
+    </div>
+    <div class="child-card">
+      <div class="child-name">碧</div>
+      <div class="percent" id="per-碧">0%</div>
+      <div class="task-list" id="tasks-碧"></div>
+    </div>
+    <div class="child-card">
+      <div class="child-name">瑞</div>
+      <div class="percent" id="per-瑞">0%</div>
+      <div class="task-list" id="tasks-次男"></div>
+    </div>
+  </div>
+
+  <script>
+    // 実験用の固定タスク（本来はSettingsシートから取っていたもの）
+    const presetTasks = ['あさごはんをたべる', 'はみがきをする', 'しゅくだい', 'おふろにいる'];
+    const children = ['花', '碧', '瑞'];
+
+    window.onload = function() {
+      // 日付が変わっていたら前日のローカルデータをリセットする仕組み
+      const todayStr = new Date().toLocaleDateString();
+      if (localStorage.getItem('lastOpenDate') !== todayStr) {
+        localStorage.clear(); // 全リセット
+        localStorage.setItem('lastOpenDate', todayStr);
+      }
+
+      // 画面の構築
+      children.forEach(child => {
+        const container = document.getElementById('tasks-' + child);
+        container.innerHTML = '';
+        
+        presetTasks.forEach((taskName, index) => {
+          // 保存されたチェック状態をブラウザから読み出す
+          const isChecked = localStorage.getItem(`${child}-${taskName}`) === 'true';
+          const checkedAttr = isChecked ? 'checked' : '';
+          
+          container.innerHTML += `
+            <label class="task-item">
+              <input type="checkbox" ${checkedAttr} onchange="toggleTask('${child}', '${taskName}', this.checked)">
+              <span>${taskName}</span>
+            </label>
+          `;
+        });
+        updatePercent(child);
+      });
+    };
+
+    function toggleTask(childName, taskName, isChecked) {
+      // ブラウザの高速メモリに即時保存（タップの瞬間にデータが固定される）
+      localStorage.setItem(`${childName}-${taskName}`, isChecked);
+      updatePercent(childName);
+    }
+
+    function updatePercent(childName) {
+      const container = document.getElementById('tasks-' + childName);
+      const total = container.querySelectorAll('input[type="checkbox"]').length;
+      const checked = container.querySelectorAll('input[type="checkbox"]:checked').length;
+      const percent = total > 0 ? Math.round((checked / total) * 100) : 0;
+      
+      document.getElementById('per-' + childName).innerText = percent + "%";
+    }
+  </script>
+</body>
+</html>
