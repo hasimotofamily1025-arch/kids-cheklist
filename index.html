@@ -185,35 +185,56 @@
     }
 
     function updateEvolutionUI(childKey, percent, showAlert) {
-      const area = document.getElementById('poke-' + childKey);
-      const nameSpan = document.getElementById('name-' + childKey);
-      const perSpan = document.getElementById('per-' + childKey);
-      const barFill = document.getElementById('bar-' + childKey);
-      const card = document.getElementById('card-' + childKey);
-      
-      if (!area || !nameSpan || !perSpan) return;
-      
-      perSpan.innerText = percent + "%";
-      if (barFill) barFill.style.width = percent + "%"; 
-      
-      area.className = "pokemon-area"; 
-      if (card) card.classList.remove("card-perfect"); 
-      
-      if (percent < 50) {
-        nameSpan.innerHTML = '<img src="https://lh3.googleusercontent.com/d/1GPKhKHij8TmzdRfqBAUZytcQcYXoMNzF">';
-        area.classList.add("status-egg");
-      } else if (percent < 100) {
-        nameSpan.innerHTML = '<img src="https://lh3.googleusercontent.com/d/1jhgFTlAtWO2ldylIE3mrDFCkAAkSGWk6">';
-        area.classList.add("status-baby");
-      } else if (percent === 100) {
-        nameSpan.innerHTML = '<img src="https://lh3.googleusercontent.com/d/1EfhGi-khMOlWdDu1Q2IpfPiwpg4_5_x2">';
-        area.classList.add("status-adult");
-        if (card) card.classList.add("card-perfect"); 
-        if (showAlert) {
-          setTimeout(function() { openGameDialog(childKey); }, 500); 
-        }
-      }
+  const area = document.getElementById('poke-' + childKey);
+  const nameSpan = document.getElementById('name-' + childKey);
+  const perSpan = document.getElementById('per-' + childKey);
+  const barFill = document.getElementById('bar-' + childKey);
+  const card = document.getElementById('card-' + childKey);
+  
+  if (!area || !nameSpan || !perSpan) return;
+  
+  perSpan.innerText = percent + "%";
+  if (barFill) barFill.style.width = percent + "%"; 
+  
+  area.className = "pokemon-area"; 
+  if (card) card.classList.remove("card-perfect"); 
+  
+  // 💡 3人それぞれの進化画像URLの定義（★ここをご自身の画像IDに書き換えてください）
+  const evolutionImages = {
+    '長女': {
+      egg:   'https://lh3.googleusercontent.com/d/1GPKhKHij8TmzdRfqBAUZytcQcYXoMNzF',
+      baby:  'https://lh3.googleusercontent.com/d/1jhgFTlAtWO2ldylIE3mrDFCkAAkSGWk6',
+      adult: 'https://lh3.googleusercontent.com/d/1EfhGi-khMOlWdDu1Q2IpfPiwpg4_5_x2'
+    },
+    '長男': {
+      egg:   'https://lh3.googleusercontent.com/d/1N4YG5VSE0k9UEU4244g2LyTc_HPYrXZ8',
+      baby:  'https://lh3.googleusercontent.com/d/1cTG-Xd-nIMwHknGsdqXAqdhhp89wBYbH',
+      adult: 'https://lh3.googleusercontent.com/d/1nYwvcAIZqm0Yj1s7HJmkiO_EzpbMnh4l'
+    },
+    '次男': {
+      egg:   'https://lh3.googleusercontent.com/d/1R_DS8GuqoumAtSDUXBnHM8FqnKq2xCCi',
+      baby:  'https://lh3.googleusercontent.com/d/130RSAzTTXlhqm08dj1cy0twzeSPINZK5',
+      adult: 'https://lh3.googleusercontent.com/d/15TKAXGXdf-TX__5k0lJP2_sheO7_XNv4'
     }
+  };
+
+  // 現在の達成度に応じて画像をセット
+  const imgs = evolutionImages[childKey];
+  if (percent < 50) {
+    nameSpan.innerHTML = `<img src="${imgs.egg}">`;
+    area.classList.add("status-egg");
+  } else if (percent < 100) {
+    nameSpan.innerHTML = `<img src="${imgs.baby}">`;
+    area.classList.add("status-baby");
+  } else if (percent === 100) {
+    nameSpan.innerHTML = `<img src="${imgs.adult}">`;
+    area.classList.add("status-adult");
+    if (card) card.classList.add("card-perfect"); 
+    if (showAlert) {
+      setTimeout(function() { openGameDialog(childKey); }, 500); 
+    }
+  }
+}
 
     function openGameDialog(childKey) {
       const targetCard = document.querySelector('#card-' + childKey + ' .child-name');
