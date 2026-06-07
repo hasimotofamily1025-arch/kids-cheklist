@@ -8,7 +8,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="manifest" href="data:application/manifest+json,{%22name%22:%22GASアプリ%22,%22short_name%22:%22GAS%22,%22start_url%22:%22.%22,%22display%22:%22standalone%22,%22orientation%22:%22portrait%22}">
   <style>
-    /* （元々のハイクオリティなCSSデザインを100%そのまま継承しています） */
     body { font-family: 'Corporate Logo Medium', 'Noto Sans JP', 'Hiragino Maru Gothic ProN', sans-serif; margin: 0; padding: 20px 20px; user-select: none; overflow-x: hidden; transition: background-color 1s ease; }
     body.theme-day { background-color: #eef9f1; background-image: linear-gradient(0deg, transparent 24%, rgba(0, 0, 0, 0.02) 25%, rgba(0, 0, 0, 0.02) 26%, transparent 27%, transparent 74%, rgba(0, 0, 0, 0.02) 75%, rgba(0, 0, 0, 0.02) 76%, transparent 77%), linear-gradient(90deg, transparent 24%, rgba(0, 0, 0, 0.02) 25%, rgba(0, 0, 0, 0.02) 26%, transparent 27%, transparent 74%, rgba(0, 0, 0, 0.02) 75%, rgba(0, 0, 0, 0.02) 76%, transparent 77%); background-size: 20px 20px; }
     body.theme-sunset { background-color: #f3a683; background-image: linear-gradient(0deg, transparent 24%, rgba(255, 255, 255, 0.05) 25%, rgba(255, 255, 255, 0.05) 26%, transparent 27%, transparent 74%, rgba(255, 255, 255, 0.05) 75%, rgba(255, 255, 255, 0.05) 76%, transparent 77%); background-size: 20px 20px; }
@@ -70,34 +69,34 @@
   <h1>きょうのチェックリスト</h1>
 
   <div class="grid-container">
-    <div class="child-card" id="card-長女">
+    <div class="child-card" id="card-花">
       <div class="child-name">花</div>
-      <div class="pokemon-area status-egg" id="poke-長女">
-        <span id="name-長女"></span>
-        <span class="percent-badge" id="per-長女">0%</span>
+      <div class="pokemon-area status-egg" id="poke-花">
+        <span id="name-花"></span>
+        <span class="percent-badge" id="per-花">0%</span>
       </div>
-      <div class="exp-bar-container"><div class="exp-bar-fill" id="bar-長女"></div></div>
-      <div class="task-list" id="tasks-長女">よみこみ中...</div>
+      <div class="exp-bar-container"><div class="exp-bar-fill" id="bar-花"></div></div>
+      <div class="task-list" id="tasks-花">よみこみ中...</div>
     </div>
 
-    <div class="child-card" id="card-長男">
+    <div class="child-card" id="card-碧">
       <div class="child-name">碧</div>
-      <div class="pokemon-area status-egg" id="poke-長男">
-        <span id="name-長男"></span>
-        <span class="percent-badge" id="per-長男">0%</span>
+      <div class="pokemon-area status-egg" id="poke-碧">
+        <span id="name-碧"></span>
+        <span class="percent-badge" id="per-碧">0%</span>
       </div>
-      <div class="exp-bar-container"><div class="exp-bar-fill" id="bar-長男"></div></div>
-      <div class="task-list" id="tasks-長男">よみこみ中...</div>
+      <div class="exp-bar-container"><div class="exp-bar-fill" id="bar-碧"></div></div>
+      <div class="task-list" id="tasks-碧">よみこみ中...</div>
     </div>
 
-    <div class="child-card" id="card-次男">
+    <div class="child-card" id="card-瑞">
       <div class="child-name">瑞</div>
-      <div class="pokemon-area status-egg" id="poke-次男">
-        <span id="name-次男"></span>
-        <span class="percent-badge" id="per-次男">0%</span>
+      <div class="pokemon-area status-egg" id="poke-瑞">
+        <span id="name-瑞"></span>
+        <span class="percent-badge" id="per-瑞">0%</span>
       </div>
-      <div class="exp-bar-container"><div class="exp-bar-fill" id="bar-次男"></div></div>
-      <div class="task-list" id="tasks-次男">よみこみ中...</div>
+      <div class="exp-bar-container"><div class="exp-bar-fill" id="bar-瑞"></div></div>
+      <div class="task-list" id="tasks-瑞">よみこみ中...</div>
     </div>
   </div>
 
@@ -119,37 +118,41 @@
   </div>
 
   <script>
-    // ⚠️【最重要】ここに新しく発行した「新バージョン」のGASのWebアプリURLを貼り付けてください
+    // ⚠️【最重要】最新のGASのWebアプリURL（末尾が /exec のもの）
     const GAS_URL = "https://script.google.com/macros/s/AKfycbyOYwwVEvjI23TL0avzF-mt7LEYWETloPvB48vKS7cpqurlcEyLQbCE0yunSwY76ZM/exec";
 
     window.onload = function() {
       updateTimeTheme();
       setInterval(updateTimeTheme, 60000);
 
-      // GitHubの外部通信用に書き換えたデータ読み込み処理
+      // データマッピングを本名「花・碧・瑞」に統一しました
       fetch(GAS_URL)
         .then(response => response.json())
         .then(data => {
-          const mapping = [{key: '長女', name: '花'}, {key: '長男', name: '碧'}, {key: '次男', name: '瑞'}];
+          const childrenKeys = ['花', '碧', '瑞'];
           
-          mapping.forEach(item => {
-            const currentPercent = data.progress[item.key] || 0;
-            updateEvolutionUI(item.key, currentPercent, false);
+          childrenKeys.forEach(key => {
+            const currentPercent = data.progress ? (data.progress[key] || 0) : 0;
+            updateEvolutionUI(key, currentPercent, false);
             
-            const container = document.getElementById('tasks-' + item.key);
+            const container = document.getElementById('tasks-' + key);
             if (!container) return;
             container.innerHTML = '';
             
-            const childTasks = data.tasks[item.key] || [];
-            childTasks.forEach(task => {
-              const isCheckedStr = task.isCompleted ? 'checked' : ''; 
-              container.innerHTML += `
-                <label class="task-item">
-                  <input type="checkbox" ${isCheckedStr} onchange="toggleTask('${item.key}', '${task.taskName}', this.checked)">
-                  <span>${task.taskName}</span>
-                </label>
-              `;
-            });
+            const childTasks = data[key] || [];
+            if (childTasks.length === 0) {
+              container.innerHTML = '<div style="color:#a0aec0; text-align:center; margin-top:20px;">きょうのクエストはありません</div>';
+            } else {
+              childTasks.forEach(task => {
+                const isCheckedStr = task.isChecked ? 'checked' : ''; 
+                container.innerHTML += `
+                  <label class="task-item">
+                    <input type="checkbox" ${isCheckedStr} onchange="toggleTask('${key}', '${task.name}', this.checked)">
+                    <span>${task.name}</span>
+                  </label>
+                `;
+              });
+            }
           });
         })
         .catch(err => {
@@ -171,7 +174,6 @@
         updateEvolutionUI(childKey, instantPercent, false);
       }
 
-      // 外部へのPOST送信に変更
       fetch(GAS_URL, {
         method: 'POST',
         mode: 'no-cors',
@@ -185,56 +187,57 @@
     }
 
     function updateEvolutionUI(childKey, percent, showAlert) {
-  const area = document.getElementById('poke-' + childKey);
-  const nameSpan = document.getElementById('name-' + childKey);
-  const perSpan = document.getElementById('per-' + childKey);
-  const barFill = document.getElementById('bar-' + childKey);
-  const card = document.getElementById('card-' + childKey);
-  
-  if (!area || !nameSpan || !perSpan) return;
-  
-  perSpan.innerText = percent + "%";
-  if (barFill) barFill.style.width = percent + "%"; 
-  
-  area.className = "pokemon-area"; 
-  if (card) card.classList.remove("card-perfect"); 
-  
-  // 💡 3人それぞれの進化画像URLの定義（★ここをご自身の画像IDに書き換えてください）
-  const evolutionImages = {
-    '長女': {
-      egg:   'https://lh3.googleusercontent.com/d/1GPKhKHij8TmzdRfqBAUZytcQcYXoMNzF',
-      baby:  'https://lh3.googleusercontent.com/d/1jhgFTlAtWO2ldylIE3mrDFCkAAkSGWk6',
-      adult: 'https://lh3.googleusercontent.com/d/1EfhGi-khMOlWdDu1Q2IpfPiwpg4_5_x2'
-    },
-    '長男': {
-      egg:   'https://lh3.googleusercontent.com/d/1N4YG5VSE0k9UEU4244g2LyTc_HPYrXZ8',
-      baby:  'https://lh3.googleusercontent.com/d/1aw2fp0U_6ksvgixpoO-LES_8aakDMHgs',
-      adult: 'https://lh3.googleusercontent.com/d/1nYwvcAIZqm0Yj1s7HJmkiO_EzpbMnh4l'
-    },
-    '次男': {
-      egg:   'https://lh3.googleusercontent.com/d/1R_DS8GuqoumAtSDUXBnHM8FqnKq2xCCi',
-      baby:  'https://lh3.googleusercontent.com/d/130RSAzTTXlhqm08dj1cy0twzeSPINZK5',
-      adult: 'https://lh3.googleusercontent.com/d/15TKAXGXdf-TX__5k0lJP2_sheO7_XNv4'
-    }
-  };
+      const area = document.getElementById('poke-' + childKey);
+      const nameSpan = document.getElementById('name-' + childKey);
+      const perSpan = document.getElementById('per-' + childKey);
+      const barFill = document.getElementById('bar-' + childKey);
+      const card = document.getElementById('card-' + childKey);
+      
+      if (!area || !nameSpan || !perSpan) return;
+      
+      perSpan.innerText = percent + "%";
+      if (barFill) barFill.style.width = percent + "%"; 
+      
+      area.className = "pokemon-area"; 
+      if (card) card.classList.remove("card-perfect"); 
+      
+      // 💡 進化写真の分岐ルールも「花・碧・瑞」にアップデートしました
+      const evolutionImages = {
+        '花': {
+          egg:   'https://lh3.googleusercontent.com/d/1GPKhKHij8TmzdRfqBAUZytcQcYXoMNzF',
+          baby:  'https://lh3.googleusercontent.com/d/1jhgFTlAtWO2ldylIE3mrDFCkAAkSGWk6',
+          adult: 'https://lh3.googleusercontent.com/d/1EfhGi-khMOlWdDu1Q2IpfPiwpg4_5_x2'
+        },
+        '碧': {
+          egg:   'https://lh3.googleusercontent.com/d/1N4YG5VSE0k9UEU4244g2LyTc_HPYrXZ8',
+          baby:  'https://lh3.googleusercontent.com/d/1aw2fp0U_6ksvgixpoO-LES_8aakDMHgs',
+          adult: 'https://lh3.googleusercontent.com/d/1nYwvcAIZqm0Yj1s7HJmkiO_EzpbMnh4l'
+        },
+        '瑞': {
+          egg:   'https://lh3.googleusercontent.com/d/1R_DS8GuqoumAtSDUXBnHM8FqnKq2xCCi',
+          baby:  'https://lh3.googleusercontent.com/d/130RSAzTTXlhqm08dj1cy0twzeSPINZK5',
+          adult: 'https://lh3.googleusercontent.com/d/15TKAXGXdf-TX__5k0lJP2_sheO7_XNv4'
+        }
+      };
 
-  // 現在の達成度に応じて画像をセット
-  const imgs = evolutionImages[childKey];
-  if (percent < 50) {
-    nameSpan.innerHTML = `<img src="${imgs.egg}">`;
-    area.classList.add("status-egg");
-  } else if (percent < 100) {
-    nameSpan.innerHTML = `<img src="${imgs.baby}">`;
-    area.classList.add("status-baby");
-  } else if (percent === 100) {
-    nameSpan.innerHTML = `<img src="${imgs.adult}">`;
-    area.classList.add("status-adult");
-    if (card) card.classList.add("card-perfect"); 
-    if (showAlert) {
-      setTimeout(function() { openGameDialog(childKey); }, 500); 
+      const imgs = evolutionImages[childKey];
+      if (!imgs) return;
+
+      if (percent < 50) {
+        nameSpan.innerHTML = `<img src="${imgs.egg}">`;
+        area.classList.add("status-egg");
+      } else if (percent < 100) {
+        nameSpan.innerHTML = `<img src="${imgs.baby}">`;
+        area.classList.add("status-baby");
+      } else if (percent === 100) {
+        nameSpan.innerHTML = `<img src="${imgs.adult}">`;
+        area.classList.add("status-adult");
+        if (card) card.classList.add("card-perfect"); 
+        if (showAlert) {
+          setTimeout(function() { openGameDialog(childKey); }, 500); 
+        }
+      }
     }
-  }
-}
 
     function openGameDialog(childKey) {
       const targetCard = document.querySelector('#card-' + childKey + ' .child-name');
