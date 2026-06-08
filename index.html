@@ -8,6 +8,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="manifest" href="data:application/manifest+json,{%22name%22:%22GAS%E3%82%A2%E3%83%96%E3%83%AA%22,%22short_name%22:%22GAS%22,%22start_url%22:%22.%22,%22display%22:%22standalone%22,%22orientation%22:%22portrait%22}">
   <style>
+    /* 以前の正常なデザイン・世界観を完全維持 */
     body { font-family: 'Corporate Logo Medium', 'Noto Sans JP', 'Hiragino Maru Gothic ProN', sans-serif; margin: 0; padding: 20px 20px; user-select: none; overflow-x: hidden; transition: background-color 1s ease; }
     body.theme-day { background-color: #eef9f1; background-image: linear-gradient(0deg, transparent 24%, rgba(0, 0, 0, 0.02) 25%, rgba(0, 0, 0, 0.02) 26%, transparent 27%, transparent 74%, rgba(0, 0, 0, 0.02) 75%, rgba(0, 0, 0, 0.02) 76%, transparent 77%, transparent), linear-gradient(90deg, transparent 24%, rgba(0, 0, 0, 0.02) 25%, rgba(0, 0, 0, 0.02) 26%, transparent 27%, transparent 74%, rgba(0, 0, 0, 0.02) 75%, rgba(0, 0, 0, 0.02) 76%, transparent 77%, transparent); background-size: 50px 50px; color: #2c3e50; }
     body.theme-sunset { background-color: #fbeedb; background-image: linear-gradient(0deg, transparent 24%, rgba(211, 84, 0, 0.02) 25%, rgba(211, 84, 0, 0.02) 26%, transparent 27%, transparent 74%, rgba(211, 84, 0, 0.02) 75%, rgba(211, 84, 0, 0.02) 76%, transparent 77%, transparent), linear-gradient(90deg, transparent 24%, rgba(211, 84, 0, 0.02) 25%, rgba(211, 84, 0, 0.02) 26%, transparent 27%, transparent 74%, rgba(211, 84, 0, 0.02) 75%, rgba(211, 84, 0, 0.02) 76%, transparent 77%, transparent); background-size: 50px 50px; color: #4a2700; }
@@ -15,17 +16,15 @@
     h1 { text-align: center; font-size: 24px; margin-bottom: 20px; text-shadow: 1px 1px 2px rgba(0,0,0,0.1); }
     body.theme-night h1 { text-shadow: 1px 1px 4px rgba(0,0,0,0.6); }
     
-    /* カードコンテナ：独立したカードが縦に綺麗に並ぶように制御 */
     #cards-container { display: flex; flex-direction: column; gap: 20px; max-width: 500px; margin: 0 auto; padding-bottom: 60px; position: relative; z-index: 10; }
     
-    .card { background: rgba(255, 255, 255, 0.9); border-radius: 16px; padding: 20px; box-shadow: 0 8px 24px rgba(149, 157, 165, 0.15); border: 2px solid rgba(255,255,255,0.7); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); margin-bottom: 10px; }
-    body.theme-night .card { background: rgba(44, 62, 80, 0.9); box-shadow: 0 8px 24px rgba(0,0,0,0.4); border: 2px solid rgba(255,255,255,0.05); }
+    .card { background: rgba(255, 255, 255, 0.85); border-radius: 16px; padding: 16px; box-shadow: 0 8px 24px rgba(149, 157, 165, 0.15); border: 2px solid rgba(255,255,255,0.7); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); }
+    body.theme-night .card { background: rgba(44, 62, 80, 0.85); border: 2px solid rgba(255,255,255,0.05); box-shadow: 0 8px 24px rgba(0,0,0,0.4); }
     
-    .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 2px solid rgba(0,0,0,0.05); padding-bottom: 8px; }
-    body.theme-night .card-header { border-bottom: 2px solid rgba(255,255,255,0.1); }
-    
-    .child-name { font-size: 22px; font-weight: bold; }
+    .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+    .child-name { font-size: 20px; font-weight: bold; }
     .progress-text { font-size: 14px; font-weight: bold; opacity: 0.8; }
+    
     .progress-bar-bg { background: #e0e0e0; border-radius: 8px; height: 14px; width: 100%; overflow: hidden; margin-bottom: 16px; box-shadow: inset 0 1px 3px rgba(0,0,0,0.1); }
     body.theme-night .progress-bar-bg { background: #4f5d6c; }
     .progress-bar-fill { height: 100%; width: 0%; background: linear-gradient(90deg, #4caf50, #8bc34a); border-radius: 8px; transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
@@ -33,12 +32,11 @@
     .rainbow-bg { background: linear-gradient(90deg, #ff6b6b, #feca57, #1dd1a1, #10ac84, #54a0ff, #5f27cd, #ff6b6b); background-size: 200% auto; animation: rainbow 3s linear infinite; }
     @keyframes rainbow { 0% { background-position: 0% center; } 100% { background-position: 200% center; } }
     
-    .task-list { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; }
-    .task-item { display: flex; align-items: center; gap: 12px; padding: 12px 14px; background: rgba(255,255,255,0.9); border-radius: 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.02); cursor: pointer; transition: background 0.2s, opacity 0.2s; position: relative; }
+    .task-list { display: flex; flex-direction: column; gap: 10px; }
+    .task-item { display: flex; align-items: center; gap: 12px; padding: 10px 14px; background: rgba(255,255,255,0.9); border-radius: 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.02); cursor: pointer; transition: background 0.2s, opacity 0.2s; position: relative; }
     body.theme-night .task-item { background: rgba(52, 73, 94, 0.9); color: #ecf0f1; }
-    .task-item input[type="checkbox"] { width: 22px; height: 22px; cursor: pointer; accent-color: #4caf50; margin: 0; }
-    .task-item span { font-size: 16px; }
-    .task-item.checked { opacity: 0.5; background: #f1f2f6; text-decoration: line-through; }
+    .task-item input[type="checkbox"] { width: 20px; height: 20px; cursor: pointer; accent-color: #4caf50; }
+    .task-item.checked { opacity: 0.6; background: #f1f2f6; text-decoration: line-through; }
     body.theme-night .task-item.checked { background: #2c3e50; opacity: 0.4; }
     
     #loading, #error-message { text-align: center; font-weight: bold; margin-top: 40px; font-size: 16px; }
@@ -52,11 +50,10 @@
 </head>
 <body class="theme-day">
 
-  <h1 id="page-title">☀️ クエストボード</h1>
+  <h1 id="page-title">☀️ 昼のクエスト</h1>
 
   <div id="loading">データをよみこんでいます...</div>
   <div id="error-message"></div>
-  
   <div id="cards-container"></div>
 
   <script>
@@ -99,7 +96,7 @@
     function hideMessage() { document.getElementById('error-message').style.display = 'none'; }
 
     // ==========================================
-    // 🔄 データ取得と画面描画 (バグ修正版)
+    // 🔄 データ取得と画面描画 (従来の配列データ対応型)
     // ==========================================
     function fetchTasks() {
       showLoading();
@@ -109,8 +106,9 @@
           return response.json();
         })
         .then(data => {
-          if (!data || typeof data !== 'object' || Array.isArray(data)) {
-            showError("データ形式が正しくありません。");
+          // 🔴 以前正しく動いていたGAS配列形式 ([ {...}, {...} ]) に完全に先祖返りさせて処理
+          if (!data || !Array.isArray(data)) {
+            showError("データの形式が正しくありません。GASのデプロイが旧バージョンの可能性があります。");
             return;
           }
 
@@ -119,19 +117,19 @@
           hideLoading();
           hideMessage();
 
-          // 各子供ごとに完全に独立したHTMLブロック（カード）を組み立てる
-          Object.keys(data).forEach(childName => {
-            const childData = data[childName];
-            const percent = childData.percent || 0;
-            const tasks = childData.tasks || [];
-            const doneCount = childData.doneCount || 0;
-            const totalTasks = childData.totalTasks || 0;
+          // 配列を1人ずつループ処理して綺麗なカードに分離
+          data.forEach(child => {
+            const childName = child.childName || child.name;
+            const percent = child.percent || 0;
+            const tasks = child.tasks || [];
+            
+            // 件数の割り出し
+            const totalTasks = tasks.length;
+            const doneCount = tasks.filter(t => t.isDone).length;
 
-            // カードの外枠
             const card = document.createElement('div');
             card.className = 'card';
 
-            // ヘッダー（名前、分数、％）
             const header = document.createElement('div');
             header.className = 'card-header';
             header.innerHTML = `
@@ -140,7 +138,6 @@
             `;
             card.appendChild(header);
 
-            // プログレスバー
             const barBg = document.createElement('div');
             barBg.className = 'progress-bar-bg';
             const barFill = document.createElement('div');
@@ -150,56 +147,40 @@
             barBg.appendChild(barFill);
             card.appendChild(barBg);
 
-            // タスクリスト
             const taskList = document.createElement('div');
             taskList.className = 'task-list';
 
-            if (tasks.length === 0) {
-              const noTask = document.createElement('div');
-              noTask.style.textAlign = 'center';
-              noTask.style.opacity = '0.5';
-              noTask.textContent = '今日のクエストはありません';
-              taskList.appendChild(noTask);
-            } else {
-              tasks.forEach(task => {
-                const item = document.createElement('div');
-                item.className = 'task-item' + (task.isDone ? ' checked' : '');
-                
-                const chk = document.createElement('input');
-                chk.type = 'checkbox';
-                chk.checked = task.isDone;
-                
-                // 行全体クリックでトグル
-                item.addEventListener('click', (e) => {
-                  if (e.target !== chk) {
-                    chk.checked = !chk.checked;
-                    toggleTask(childName, task.name, chk.checked, item, barFill, card);
-                  }
-                });
-
-                chk.addEventListener('change', () => {
-                  toggleTask(childName, task.name, chk.checked, item, barFill, card);
-                });
-
-                const label = document.createElement('span');
-                label.textContent = task.name;
-
-                item.appendChild(chk);
-                item.appendChild(label);
-                taskList.appendChild(item);
+            tasks.forEach(task => {
+              const item = document.createElement('div');
+              item.className = 'task-item' + (task.isDone ? ' checked' : '');
+              
+              const chk = document.createElement('input');
+              chk.type = 'checkbox';
+              chk.checked = task.isDone;
+              
+              // チェック変更時の挙動
+              chk.addEventListener('change', () => {
+                toggleTask(childName, task.name, chk.checked, item, barFill, card);
               });
-            }
+
+              const label = document.createElement('span');
+              label.textContent = task.name;
+
+              item.appendChild(chk);
+              item.appendChild(label);
+              taskList.appendChild(item);
+            });
 
             card.appendChild(taskList);
             container.appendChild(card);
 
-            // マスコットの制御
+            // マスコットのアニメーション起動
             updateMascot(childName, percent);
           });
         })
         .catch(error => {
           console.error(error);
-          showError("データ通信に失敗しました。GASの設定やURLを確認してください。");
+          showError("データ通信に失敗しました。時間をおいて試してください。");
         });
     }
 
@@ -221,18 +202,12 @@
           return res.json();
         })
         .then(result => {
-          if (result && result.percent !== undefined) {
-            barFillElement.style.width = result.percent + '%';
-            const textEl = cardElement.querySelector('.progress-text');
-            if (textEl) {
-              // 完了件数/総件数の表示更新ロジックを安全に処理
-              fetchTasks(); // 状態を正確に再同期するために再読込を推奨
-            }
-          }
+          // チェック後に再描画して進捗を最新に同期
+          fetchTasks();
         })
         .catch(err => {
           console.error(err);
-          alert('エラーが発生したため元に戻します。');
+          alert('通信エラーが発生したため、元の状態に戻します。');
           const chk = itemElement.querySelector('input[type="checkbox"]');
           chk.checked = !isChecked;
           if (chk.checked) itemElement.classList.add('checked');
@@ -241,7 +216,7 @@
     }
 
     // ==========================================
-    // 👾 マスコット制御システム
+    // 👾 マスコット制御AI
     // ==========================================
     function updateMascot(childName, percent) {
       const id = `mascot-${childName}`;
