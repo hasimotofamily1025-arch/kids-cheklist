@@ -8,7 +8,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="manifest" href="data:application/manifest+json,{%22name%22:%22GAS%E3%82%A2%E3%83%96%E3%83%AA%22,%22short_name%22:%22GAS%22,%22start_url%22:%22.%22,%22display%22:%22standalone%22,%22orientation%22:%22portrait%22}">
   <style>
-    /* 以前の正常なデザイン・世界観を完全維持 */
+    /* 以前のポップで可愛い世界観・デザイン・フォントを100%維持 */
     body { font-family: 'Corporate Logo Medium', 'Noto Sans JP', 'Hiragino Maru Gothic ProN', sans-serif; margin: 0; padding: 20px 20px; user-select: none; overflow-x: hidden; transition: background-color 1s ease; }
     body.theme-day { background-color: #eef9f1; background-image: linear-gradient(0deg, transparent 24%, rgba(0, 0, 0, 0.02) 25%, rgba(0, 0, 0, 0.02) 26%, transparent 27%, transparent 74%, rgba(0, 0, 0, 0.02) 75%, rgba(0, 0, 0, 0.02) 76%, transparent 77%, transparent), linear-gradient(90deg, transparent 24%, rgba(0, 0, 0, 0.02) 25%, rgba(0, 0, 0, 0.02) 26%, transparent 27%, transparent 74%, rgba(0, 0, 0, 0.02) 75%, rgba(0, 0, 0, 0.02) 76%, transparent 77%, transparent); background-size: 50px 50px; color: #2c3e50; }
     body.theme-sunset { background-color: #fbeedb; background-image: linear-gradient(0deg, transparent 24%, rgba(211, 84, 0, 0.02) 25%, rgba(211, 84, 0, 0.02) 26%, transparent 27%, transparent 74%, rgba(211, 84, 0, 0.02) 75%, rgba(211, 84, 0, 0.02) 76%, transparent 77%, transparent), linear-gradient(90deg, transparent 24%, rgba(211, 84, 0, 0.02) 25%, rgba(211, 84, 0, 0.02) 26%, transparent 27%, transparent 74%, rgba(211, 84, 0, 0.02) 75%, rgba(211, 84, 0, 0.02) 76%, transparent 77%, transparent); background-size: 50px 50px; color: #4a2700; }
@@ -16,6 +16,7 @@
     h1 { text-align: center; font-size: 24px; margin-bottom: 20px; text-shadow: 1px 1px 2px rgba(0,0,0,0.1); }
     body.theme-night h1 { text-shadow: 1px 1px 4px rgba(0,0,0,0.6); }
     
+    /* カードコンテナのレイアウトを適正化 */
     #cards-container { display: flex; flex-direction: column; gap: 20px; max-width: 500px; margin: 0 auto; padding-bottom: 60px; position: relative; z-index: 10; }
     
     .card { background: rgba(255, 255, 255, 0.85); border-radius: 16px; padding: 16px; box-shadow: 0 8px 24px rgba(149, 157, 165, 0.15); border: 2px solid rgba(255,255,255,0.7); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); }
@@ -29,6 +30,7 @@
     body.theme-night .progress-bar-bg { background: #4f5d6c; }
     .progress-bar-fill { height: 100%; width: 0%; background: linear-gradient(90deg, #4caf50, #8bc34a); border-radius: 8px; transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
     
+    /* 100%時の虹色アニメーション */
     .rainbow-bg { background: linear-gradient(90deg, #ff6b6b, #feca57, #1dd1a1, #10ac84, #54a0ff, #5f27cd, #ff6b6b); background-size: 200% auto; animation: rainbow 3s linear infinite; }
     @keyframes rainbow { 0% { background-position: 0% center; } 100% { background-position: 200% center; } }
     
@@ -42,6 +44,7 @@
     #loading, #error-message { text-align: center; font-weight: bold; margin-top: 40px; font-size: 16px; }
     #error-message { color: #e74c3c; display: none; background: #fadbd8; padding: 12px; border-radius: 8px; max-width: 400px; margin: 20px auto; }
     
+    /* マスコット用のスタイリング */
     .mascot { position: fixed; width: 45px; height: 45px; pointer-events: none; z-index: 100; opacity: 0; transition: transform 0.2s linear; image-rendering: pixelated; }
     .creeper-blink { animation: creeperFlash 0.3s infinite alternate; }
     @keyframes creeperFlash { 0% { filter: brightness(1); } 100% { filter: brightness(2) drop-shadow(0 0 8px #fff); } }
@@ -62,6 +65,7 @@
     // ==========================================
     const GAS_URL = "https://script.google.com/macros/s/AKfycby-Y62Sbya6Z79W0xTj0v9M-VzFvYjVb0T_eF18712q9eE32_fV4Zq9bW-XwY38_b3M/exec"; 
 
+    // マスコットのキャラクター画像マッピング設定
     const mascotConfig = {
       '花': { type: 'steve', img: 'https://i.imgur.com/u38p7wF.png' },
       '碧': { type: 'creeper', img: 'https://i.imgur.com/83pZ7Ym.png' },
@@ -73,6 +77,7 @@
       fetchTasks();
     });
 
+    // 時間帯に合わせたスタイルとタイトルの制御
     function applyTimeTheme() {
       const hour = new Date().getHours();
       const body = document.body;
@@ -96,7 +101,7 @@
     function hideMessage() { document.getElementById('error-message').style.display = 'none'; }
 
     // ==========================================
-    // 🔄 データ取得と画面描画 (従来の配列データ対応型)
+    // 🔄 データ取得と画面描画 (GASオブジェクト完全同期)
     // ==========================================
     function fetchTasks() {
       showLoading();
@@ -106,27 +111,26 @@
           return response.json();
         })
         .then(data => {
-          // 🔴 以前正しく動いていたGAS配列形式 ([ {...}, {...} ]) に完全に先祖返りさせて処理
-          if (!data || !Array.isArray(data)) {
-            showError("データの形式が正しくありません。GASのデプロイが旧バージョンの可能性があります。");
+          // GASの出力形式（Object）に合わせて厳密にバリデーション
+          if (!data || typeof data !== 'object' || Array.isArray(data)) {
+            showError("データの形式が正しくありません。");
             return;
           }
 
           const container = document.getElementById('cards-container');
-          container.innerHTML = '';
+          container.innerHTML = ''; // 残存要素を完全消去
           hideLoading();
           hideMessage();
 
-          // 配列を1人ずつループ処理して綺麗なカードに分離
-          data.forEach(child => {
-            const childName = child.childName || child.name;
-            const percent = child.percent || 0;
-            const tasks = child.tasks || [];
-            
-            // 件数の割り出し
-            const totalTasks = tasks.length;
-            const doneCount = tasks.filter(t => t.isDone).length;
+          // オブジェクトのキー（子供の名前）をループ処理して完全に独立したカードを作る
+          Object.keys(data).forEach(childName => {
+            const childData = data[childName];
+            const percent = childData.percent || 0;
+            const tasks = childData.tasks || [];
+            const doneCount = childData.doneCount || 0;
+            const totalTasks = childData.totalTasks || 0;
 
+            // 各子供用の独立したカードコンポーネントの構築
             const card = document.createElement('div');
             card.className = 'card';
 
@@ -158,7 +162,14 @@
               chk.type = 'checkbox';
               chk.checked = task.isDone;
               
-              // チェック変更時の挙動
+              // 行全体クリックで直感的にトグルできるように調整
+              item.addEventListener('click', (e) => {
+                if (e.target !== chk) {
+                  chk.checked = !chk.checked;
+                  toggleTask(childName, task.name, chk.checked, item, barFill, card);
+                }
+              });
+
               chk.addEventListener('change', () => {
                 toggleTask(childName, task.name, chk.checked, item, barFill, card);
               });
@@ -174,7 +185,7 @@
             card.appendChild(taskList);
             container.appendChild(card);
 
-            // マスコットのアニメーション起動
+            // 100%達成時のマスコット自律行動AIをキック
             updateMascot(childName, percent);
           });
         })
@@ -185,7 +196,7 @@
     }
 
     // ==========================================
-    // ✉️ チェック切り替え時の通信処理
+    // ✉️ チェック切り替え時の通信処理と部分反映
     // ==========================================
     function toggleTask(childName, taskName, isChecked, itemElement, barFillElement, cardElement) {
       if (isChecked) {
@@ -202,8 +213,19 @@
           return res.json();
         })
         .then(result => {
-          // チェック後に再描画して進捗を最新に同期
-          fetchTasks();
+          // GASの戻り値 {childName, percent} に基づいてゲージとテキストを同期
+          if (result && result.percent !== undefined) {
+            barFillElement.style.width = result.percent + '%';
+            
+            if (result.percent === 100) {
+              barFillElement.classList.add('rainbow-bg');
+            } else {
+              barFillElement.classList.remove('rainbow-bg');
+            }
+            
+            // チェックを付けた瞬間のズレを防ぐため、最新のスコアに画面全体を安全に同期
+            fetchTasks();
+          }
         })
         .catch(err => {
           console.error(err);
@@ -216,7 +238,7 @@
     }
 
     // ==========================================
-    // 👾 マスコット制御AI
+    // 👾 マスコット（ペット・モンスター）自律行動制御
     // ==========================================
     function updateMascot(childName, percent) {
       const id = `mascot-${childName}`;
@@ -225,12 +247,13 @@
 
       if (!config) return;
 
+      // 100%未満になったらマスコットを完全に消去
       if (percent < 100) {
         if (mascot) mascot.remove();
         return;
       }
 
-      if (mascot) return;
+      if (mascot) return; // 二重生成の完全防止
 
       mascot = document.createElement('img');
       mascot.id = id;
@@ -243,6 +266,7 @@
 
       setTimeout(() => { mascot.style.opacity = '1'; }, 100);
 
+      // マスコットごとに特色を持たせた移動アルゴリズム
       function executeBehavior() {
         if (!document.getElementById(id)) return;
 
@@ -250,6 +274,7 @@
         const nextX = Math.random() * (window.innerWidth - 60);
         const nextY = Math.random() * (window.innerHeight - 100) + 50;
 
+        // 進行方向に向きをアジャスト
         if (nextX < currentX) {
           mascot.style.transform = 'scaleX(-1)';
         } else {
@@ -257,6 +282,7 @@
         }
 
         if (config.type === 'steve') {
+          // スティーブ：テレポート（フェードで位置移動）
           mascot.style.transition = 'opacity 0.3s ease';
           mascot.style.opacity = '0';
           setTimeout(() => {
@@ -267,6 +293,7 @@
           setTimeout(executeBehavior, 4000 + Math.random() * 3000);
           
         } else if (config.type === 'creeper') {
+          // クリーパー：等速移動 ＋ 低確率点滅モード
           mascot.style.transition = 'left 5s linear, top 5s linear';
           mascot.style.left = nextX + 'px';
           mascot.style.top = nextY + 'px';
@@ -283,6 +310,7 @@
           }, 5200);
 
         } else if (config.type === 'wolf') {
+          // オオカミ：俊敏移動 ＋ お座り休憩モード
           mascot.style.transition = 'left 1.5s ease-out, top 1.5s ease-out';
           mascot.style.left = nextX + 'px';
           mascot.style.top = nextY + 'px';
