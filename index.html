@@ -33,4 +33,294 @@
     body.theme-night .task-item.checked { background: #2c3e50; opacity: 0.4; }
     #loading, #error-message { text-align: center; font-weight: bold; margin-top: 40px; font-size: 16px; }
     #error-message { color: #e74c3c; display: none; background: #fadbd8; padding: 12px; border-radius: 8px; max-width: 400px; margin: 20px auto; }
-    .mascot { position: fixed; width: 45px; height: 45px; pointer-events: none; z-index: 100; opacity: 0; transition: transform 0.2s linear; image
+    .mascot { position: fixed; width: 45px; height: 45px; pointer-events: none; z-index: 100; opacity: 0; transition: transform 0.2s linear; image-rendering: pixelated; }
+    .creeper-blink { animation: creeperFlash 0.3s infinite alternate; }
+    @keyframes creeperFlash { 0% { filter: brightness(1); } 100% { filter: brightness(2) drop-shadow(0 0 8px #fff); } }
+    .wolf-sit { transform: scaleY(0.7) !important; }
+  </style>
+</head>
+<body class="theme-day">
+
+  <h1 id="page-title">☀️ 昼のクエスト</h1>
+
+  <div id="loading">データをよみこんでいます...</div>
+  <div id="error-message"></div>
+  <div id="cards-container"></div>
+
+  <script>
+    // ==========================================
+    // ⚙️ 設定：あなたのGASウェブアプリのURL
+    // ==========================================
+    const GAS_URL = "https://script.google.com/macros/s/AKfycby-Y62Sbya6Z79W0xTj0v9M-VzFvYjVb0T_eF18712q9eE32_fV4Zq9bW-XwY38_b3M/exec"; 
+
+    // マスコットのアニメーション設定
+    const mascotConfig = {
+      '花': { type: 'steve', img: 'https://i.imgur.com/u38p7wF.png' },
+      '碧': { type: 'creeper', img: 'https://i.imgur.com/83pZ7Ym.png' },
+      '瑞': { type: 'wolf', img: 'https://i.imgur.com/W2d5D7m.png' }
+    };
+
+    // 起動時の初期化
+    document.addEventListener('DOMContentLoaded', () => {
+      applyTimeTheme();
+      fetchTasks();
+    });
+
+    // 時間帯によるテーマ切り替え
+    function applyTimeTheme() {
+      const hour = new Date().getHours();
+      const body = document.body;
+      const title = document.getElementById('page-title');
+      
+      if (hour >= 6 && hour < 16) {
+        body.className = 'theme-day';
+        title.textContent = '☀️ 昼のクエスト';
+      } else if (hour >= 16 && hour < 19) {
+        body.className = 'theme-sunset';
+        title.textContent = '🌆 夕方のクエスト';
+      } else {
+        body.className = 'theme-night';
+        title.textContent = '🌙 夜のクエスト';
+      }
+    }
+
+    function showLoading() { document.getElementById('loading').style.display = 'block'; }
+    function hideLoading() { document.getElementById('loading').style.display = 'none'; }
+    function showError(msg) { hideLoading(); const err = document.getElementById('error-message'); err.textContent = msg; err.style.display = 'block'; }
+    function hideMessage() { document.getElementById('error-message').style.display = 'none'; }
+
+    // ==========================================
+    // 🔄 データ取得と画面描画 (GASオブジェクト形式対応)
+    // ==========================================
+    function fetchTasks() {
+      showLoading();
+      fetch(GAS_URL)
+        .then(response => {
+          if (!response.ok) throw new Error('ネットワーク応答が正常ではありません。');
+          return response.json();
+        })
+        .then(data => {
+          // 受信データがオブジェクト形式であるか検証
+          if (!data || typeof data !== 'object' || Array.isArray(data)) {
+            showError("データ形式エラー。GAS側とHTML側の同期がズレています。");
+            return;
+          }
+
+          const container = document.getElementById('cards-container');
+          container.innerHTML = '';
+          hideLoading();
+          hideMessage();
+
+          // 子供のキー（花、碧、瑞）ごとにカードを生成
+          Object.keys(data).forEach(childName => {
+            const childData = data[childName];
+            const percent = childData.percent || 0;
+            const tasks = childData.tasks || [];
+            const doneCount = childData.doneCount || 0;
+            const totalTasks = childData.totalTasks || 0;
+
+            const card = document.createElement('div');
+            card.className = 'card';
+
+            const header = document.createElement('div');
+            header.className = 'card-header';
+            header.innerHTML = `<span class="child-name">${childName}</span><span class="progress-text">${doneCount}/${totalTasks} (${percent}%)</span>`;
+            card.appendChild(header);
+
+            const barBg = document.createElement('div');
+            barBg.className = 'progress-bar-bg';
+            const barFill = document.createElement('div');
+            barFill.className = 'progress-bar-fill';
+            barFill.style.width = percent + '%';
+            if (percent === 100) barFill.classList.add('rainbow-bg');
+            barBg.appendChild(barFill);
+            card.appendChild(barBg);
+
+            const taskList = document.createElement('div');
+            taskList.className = 'task-list';
+
+            tasks.forEach(task => {
+              const item = document.createElement('div');
+              item.className = 'task-item' + (task.isDone ? ' checked' : '');
+              
+              const chk = document.createElement('input');
+              chk.type = 'checkbox';
+              chk.checked = task.isDone;
+              
+              // 各項目のクリックイベント割り当て
+              item.addEventListener('click', (e) => {
+                if (e.target !== chk) {
+                  chk.checked = !chk.checked;
+                }
+                toggleTask(childName, task.name, chk.checked, item, barFill, card);
+              });
+
+              chk.addEventListener('click', (e) => { e.stopPropagation(); });
+              chk.addEventListener('change', () => {
+                toggleTask(childName, task.name, chk.checked, item, barFill, card);
+              });
+
+              const label = document.createElement('span');
+              label.textContent = task.name;
+
+              item.appendChild(chk);
+              item.appendChild(label);
+              taskList.appendChild(item);
+            });
+
+            card.appendChild(taskList);
+            container.appendChild(card);
+
+            // マスコットの生成・移動を開始
+            updateMascot(childName, percent);
+          });
+        })
+        .catch(error => {
+          console.error(error);
+          showError("データ通信に失敗しました。時間をおいて試してください。");
+        });
+    }
+
+    // ==========================================
+    // ✉️ チェック切り替え時の通信処理
+    // ==========================================
+    function toggleTask(childName, taskName, isChecked, itemElement, barFillElement, cardElement) {
+      if (isChecked) {
+        itemElement.classList.add('checked');
+      } else {
+        itemElement.classList.remove('checked');
+      }
+
+      const postUrl = `${GAS_URL}?childName=${encodeURIComponent(childName)}&taskName=${encodeURIComponent(taskName)}&isDone=${isChecked}`;
+      
+      fetch(postUrl, { method: 'GET' })
+        .then(res => {
+          if (!res.ok) throw new Error('更新に失敗しました');
+          return res.json();
+        })
+        .then(result => {
+          if (result && result.percent !== undefined) {
+            barFillElement.style.width = result.percent + '%';
+            const textEl = cardElement.querySelector('.progress-text');
+            if (textEl) {
+              const parts = textEl.textContent.split(' ');
+              textEl.textContent = `${parts[0]} (${result.percent}%)`;
+            }
+            if (result.percent === 100) {
+              barFillElement.classList.add('rainbow-bg');
+            } else {
+              barFillElement.classList.remove('rainbow-bg');
+            }
+            updateMascot(childName, result.percent);
+          }
+        })
+        .catch(err => {
+          console.error(err);
+          alert('通信エラーが発生したため、元の状態に戻します。');
+          const chk = itemElement.querySelector('input[type="checkbox"]');
+          chk.checked = !isChecked;
+          if (chk.checked) itemElement.classList.add('checked');
+          else itemElement.classList.remove('checked');
+        });
+    }
+
+    // ==========================================
+    // 👾 マスコット（ペット・モンスター）制御システム
+    // ==========================================
+    function updateMascot(childName, percent) {
+      const id = `mascot-${childName}`;
+      let mascot = document.getElementById(id);
+      const config = mascotConfig[childName];
+
+      if (!config) return;
+
+      // 100%達成時のみ表示、それ以外は消去
+      if (percent < 100) {
+        if (mascot) mascot.remove();
+        return;
+      }
+
+      if (mascot) return; // すでに画面に存在していれば重複生成しない
+
+      mascot = document.createElement('img');
+      mascot.id = id;
+      mascot.className = 'mascot';
+      mascot.src = config.img;
+      
+      // 最初はランダムな位置にふわっと出現
+      mascot.style.left = Math.random() * (window.innerWidth - 60) + 'px';
+      mascot.style.top = Math.random() * (window.innerHeight - 100) + 50 + 'px';
+      document.body.appendChild(mascot);
+
+      // フェードイン
+      setTimeout(() => { mascot.style.opacity = '1'; }, 100);
+
+      // 自律行動AIの実行
+      function executeBehavior() {
+        if (!document.getElementById(id)) return; // 画面から消えていたら終了
+
+        const currentX = parseFloat(mascot.style.left) || 0;
+        const nextX = Math.random() * (window.innerWidth - 60);
+        const nextY = Math.random() * (window.innerHeight - 100) + 50;
+
+        // キャラクターの向き反転
+        if (nextX < currentX) {
+          mascot.style.transform = 'scaleX(-1)';
+        } else {
+          mascot.style.transform = 'scaleX(1)';
+        }
+
+        // 各マスコット特有の動き
+        if (config.type === 'steve') {
+          // スティーブ：瞬間移動（テレポート）
+          mascot.style.transition = 'opacity 0.3s ease';
+          mascot.style.opacity = '0';
+          setTimeout(() => {
+            mascot.style.left = nextX + 'px';
+            mascot.style.top = nextY + 'px';
+            mascot.style.opacity = '1';
+          }, 300);
+          setTimeout(executeBehavior, 4000 + Math.random() * 3000);
+          
+        } else if (config.type === 'creeper') {
+          // クリーパー：ゆっくり近づき、低確率で点滅爆発寸前になる
+          mascot.style.transition = 'left 5s linear, top 5s linear';
+          mascot.style.left = nextX + 'px';
+          mascot.style.top = nextY + 'px';
+          setTimeout(() => {
+            if (Math.random() < 0.3) {
+              mascot.classList.add('creeper-blink');
+              setTimeout(() => {
+                mascot.classList.remove('creeper-blink');
+                executeBehavior();
+              }, 1500);
+            } else {
+              executeBehavior();
+            }
+          }, 5200);
+
+        } else if (config.type === 'wolf') {
+          // オオカミ：俊敏に動き、たまにお座りして休憩する
+          mascot.style.transition = 'left 1.5s ease-out, top 1.5s ease-out';
+          mascot.style.left = nextX + 'px';
+          mascot.style.top = nextY + 'px';
+          setTimeout(() => {
+            if (Math.random() < 0.5) {
+              mascot.classList.add('wolf-sit');
+              setTimeout(() => {
+                mascot.classList.remove('wolf-sit');
+                executeBehavior();
+              }, 2500);
+            } else {
+              executeBehavior();
+            }
+          }, 1700);
+        }
+      }
+
+      // 行動AIループのトリガー
+      setTimeout(executeBehavior, 1000 + Math.random() * 2000);
+    }
+  </script>
+</body>
+</html>
