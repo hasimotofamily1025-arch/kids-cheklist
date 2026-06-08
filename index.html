@@ -14,25 +14,36 @@
     body.theme-night { background-color: #1a1c2e; background-image: linear-gradient(0deg, transparent 24%, rgba(255, 255, 255, 0.01) 25%, rgba(255, 255, 255, 0.01) 26%, transparent 27%, transparent 74%, rgba(255, 255, 255, 0.01) 75%, rgba(255, 255, 255, 0.01) 76%, transparent 77%, transparent), linear-gradient(90deg, transparent 24%, rgba(255, 255, 255, 0.01) 25%, rgba(255, 255, 255, 0.01) 26%, transparent 27%, transparent 74%, rgba(255, 255, 255, 0.01) 75%, rgba(255, 255, 255, 0.01) 76%, transparent 77%, transparent); background-size: 50px 50px; color: #ecf0f1; }
     h1 { text-align: center; font-size: 24px; margin-bottom: 20px; text-shadow: 1px 1px 2px rgba(0,0,0,0.1); }
     body.theme-night h1 { text-shadow: 1px 1px 4px rgba(0,0,0,0.6); }
+    
+    /* カードコンテナ：独立したカードが縦に綺麗に並ぶように制御 */
     #cards-container { display: flex; flex-direction: column; gap: 20px; max-width: 500px; margin: 0 auto; padding-bottom: 60px; position: relative; z-index: 10; }
-    .card { background: rgba(255, 255, 255, 0.85); border-radius: 16px; padding: 16px; box-shadow: 0 8px 24px rgba(149, 157, 165, 0.15); border: 2px solid rgba(255,255,255,0.7); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); transition: transform 0.3s ease, box-shadow 0.3s ease; }
-    body.theme-night .card { background: rgba(44, 62, 80, 0.85); border-radius: 16px; padding: 16px; box-shadow: 0 8px 24px rgba(0,0,0,0.4); border: 2px solid rgba(255,255,255,0.05); }
-    .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-    .child-name { font-size: 20px; font-weight: bold; }
+    
+    .card { background: rgba(255, 255, 255, 0.9); border-radius: 16px; padding: 20px; box-shadow: 0 8px 24px rgba(149, 157, 165, 0.15); border: 2px solid rgba(255,255,255,0.7); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); margin-bottom: 10px; }
+    body.theme-night .card { background: rgba(44, 62, 80, 0.9); box-shadow: 0 8px 24px rgba(0,0,0,0.4); border: 2px solid rgba(255,255,255,0.05); }
+    
+    .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 2px solid rgba(0,0,0,0.05); padding-bottom: 8px; }
+    body.theme-night .card-header { border-bottom: 2px solid rgba(255,255,255,0.1); }
+    
+    .child-name { font-size: 22px; font-weight: bold; }
     .progress-text { font-size: 14px; font-weight: bold; opacity: 0.8; }
     .progress-bar-bg { background: #e0e0e0; border-radius: 8px; height: 14px; width: 100%; overflow: hidden; margin-bottom: 16px; box-shadow: inset 0 1px 3px rgba(0,0,0,0.1); }
     body.theme-night .progress-bar-bg { background: #4f5d6c; }
     .progress-bar-fill { height: 100%; width: 0%; background: linear-gradient(90deg, #4caf50, #8bc34a); border-radius: 8px; transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
+    
     .rainbow-bg { background: linear-gradient(90deg, #ff6b6b, #feca57, #1dd1a1, #10ac84, #54a0ff, #5f27cd, #ff6b6b); background-size: 200% auto; animation: rainbow 3s linear infinite; }
     @keyframes rainbow { 0% { background-position: 0% center; } 100% { background-position: 200% center; } }
-    .task-list { display: flex; flex-direction: column; gap: 10px; }
-    .task-item { display: flex; align-items: center; gap: 12px; padding: 10px 14px; background: rgba(255,255,255,0.9); border-radius: 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.02); cursor: pointer; transition: background 0.2s, opacity 0.2s; position: relative; }
+    
+    .task-list { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; }
+    .task-item { display: flex; align-items: center; gap: 12px; padding: 12px 14px; background: rgba(255,255,255,0.9); border-radius: 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.02); cursor: pointer; transition: background 0.2s, opacity 0.2s; position: relative; }
     body.theme-night .task-item { background: rgba(52, 73, 94, 0.9); color: #ecf0f1; }
-    .task-item input[type="checkbox"] { width: 20px; height: 20px; cursor: pointer; accent-color: #4caf50; }
-    .task-item.checked { opacity: 0.6; background: #f1f2f6; text-decoration: line-through; }
+    .task-item input[type="checkbox"] { width: 22px; height: 22px; cursor: pointer; accent-color: #4caf50; margin: 0; }
+    .task-item span { font-size: 16px; }
+    .task-item.checked { opacity: 0.5; background: #f1f2f6; text-decoration: line-through; }
     body.theme-night .task-item.checked { background: #2c3e50; opacity: 0.4; }
+    
     #loading, #error-message { text-align: center; font-weight: bold; margin-top: 40px; font-size: 16px; }
     #error-message { color: #e74c3c; display: none; background: #fadbd8; padding: 12px; border-radius: 8px; max-width: 400px; margin: 20px auto; }
+    
     .mascot { position: fixed; width: 45px; height: 45px; pointer-events: none; z-index: 100; opacity: 0; transition: transform 0.2s linear; image-rendering: pixelated; }
     .creeper-blink { animation: creeperFlash 0.3s infinite alternate; }
     @keyframes creeperFlash { 0% { filter: brightness(1); } 100% { filter: brightness(2) drop-shadow(0 0 8px #fff); } }
@@ -41,32 +52,30 @@
 </head>
 <body class="theme-day">
 
-  <h1 id="page-title">☀️ 昼のクエスト</h1>
+  <h1 id="page-title">☀️ クエストボード</h1>
 
   <div id="loading">データをよみこんでいます...</div>
   <div id="error-message"></div>
+  
   <div id="cards-container"></div>
 
   <script>
     // ==========================================
     // ⚙️ 設定：あなたのGASウェブアプリのURL
     // ==========================================
-    const GAS_URL = "https://script.google.com/macros/s/AKfycbxNtbmSEmnlS-MtIKkqbozDJqmjt1a5dMk5Bf4KM71WbHQxaJbRIDZ_DP5M4XXsIzk/exec"; 
+    const GAS_URL = "https://script.google.com/macros/s/AKfycby-Y62Sbya6Z79W0xTj0v9M-VzFvYjVb0T_eF18712q9eE32_fV4Zq9bW-XwY38_b3M/exec"; 
 
-    // マスコットのアニメーション設定
     const mascotConfig = {
       '花': { type: 'steve', img: 'https://i.imgur.com/u38p7wF.png' },
       '碧': { type: 'creeper', img: 'https://i.imgur.com/83pZ7Ym.png' },
       '瑞': { type: 'wolf', img: 'https://i.imgur.com/W2d5D7m.png' }
     };
 
-    // 起動時の初期化
     document.addEventListener('DOMContentLoaded', () => {
       applyTimeTheme();
       fetchTasks();
     });
 
-    // 時間帯によるテーマ切り替え
     function applyTimeTheme() {
       const hour = new Date().getHours();
       const body = document.body;
@@ -90,7 +99,7 @@
     function hideMessage() { document.getElementById('error-message').style.display = 'none'; }
 
     // ==========================================
-    // 🔄 データ取得と画面描画 (GASオブジェクト形式対応)
+    // 🔄 データ取得と画面描画 (バグ修正版)
     // ==========================================
     function fetchTasks() {
       showLoading();
@@ -100,9 +109,8 @@
           return response.json();
         })
         .then(data => {
-          // 受信データがオブジェクト形式であるか検証
           if (!data || typeof data !== 'object' || Array.isArray(data)) {
-            showError("データ形式エラー。GAS側とHTML側の同期がズレています。");
+            showError("データ形式が正しくありません。");
             return;
           }
 
@@ -111,7 +119,7 @@
           hideLoading();
           hideMessage();
 
-          // 子供のキー（花、碧、瑞）ごとにカードを生成
+          // 各子供ごとに完全に独立したHTMLブロック（カード）を組み立てる
           Object.keys(data).forEach(childName => {
             const childData = data[childName];
             const percent = childData.percent || 0;
@@ -119,14 +127,20 @@
             const doneCount = childData.doneCount || 0;
             const totalTasks = childData.totalTasks || 0;
 
+            // カードの外枠
             const card = document.createElement('div');
             card.className = 'card';
 
+            // ヘッダー（名前、分数、％）
             const header = document.createElement('div');
             header.className = 'card-header';
-            header.innerHTML = `<span class="child-name">${childName}</span><span class="progress-text">${doneCount}/${totalTasks} (${percent}%)</span>`;
+            header.innerHTML = `
+              <span class="child-name">${childName}</span>
+              <span class="progress-text">${doneCount}/${totalTasks} (${percent}%)</span>
+            `;
             card.appendChild(header);
 
+            // プログレスバー
             const barBg = document.createElement('div');
             barBg.className = 'progress-bar-bg';
             const barFill = document.createElement('div');
@@ -136,48 +150,56 @@
             barBg.appendChild(barFill);
             card.appendChild(barBg);
 
+            // タスクリスト
             const taskList = document.createElement('div');
             taskList.className = 'task-list';
 
-            tasks.forEach(task => {
-              const item = document.createElement('div');
-              item.className = 'task-item' + (task.isDone ? ' checked' : '');
-              
-              const chk = document.createElement('input');
-              chk.type = 'checkbox';
-              chk.checked = task.isDone;
-              
-              // 各項目のクリックイベント割り当て
-              item.addEventListener('click', (e) => {
-                if (e.target !== chk) {
-                  chk.checked = !chk.checked;
-                }
-                toggleTask(childName, task.name, chk.checked, item, barFill, card);
+            if (tasks.length === 0) {
+              const noTask = document.createElement('div');
+              noTask.style.textAlign = 'center';
+              noTask.style.opacity = '0.5';
+              noTask.textContent = '今日のクエストはありません';
+              taskList.appendChild(noTask);
+            } else {
+              tasks.forEach(task => {
+                const item = document.createElement('div');
+                item.className = 'task-item' + (task.isDone ? ' checked' : '');
+                
+                const chk = document.createElement('input');
+                chk.type = 'checkbox';
+                chk.checked = task.isDone;
+                
+                // 行全体クリックでトグル
+                item.addEventListener('click', (e) => {
+                  if (e.target !== chk) {
+                    chk.checked = !chk.checked;
+                    toggleTask(childName, task.name, chk.checked, item, barFill, card);
+                  }
+                });
+
+                chk.addEventListener('change', () => {
+                  toggleTask(childName, task.name, chk.checked, item, barFill, card);
+                });
+
+                const label = document.createElement('span');
+                label.textContent = task.name;
+
+                item.appendChild(chk);
+                item.appendChild(label);
+                taskList.appendChild(item);
               });
-
-              chk.addEventListener('click', (e) => { e.stopPropagation(); });
-              chk.addEventListener('change', () => {
-                toggleTask(childName, task.name, chk.checked, item, barFill, card);
-              });
-
-              const label = document.createElement('span');
-              label.textContent = task.name;
-
-              item.appendChild(chk);
-              item.appendChild(label);
-              taskList.appendChild(item);
-            });
+            }
 
             card.appendChild(taskList);
             container.appendChild(card);
 
-            // マスコットの生成・移動を開始
+            // マスコットの制御
             updateMascot(childName, percent);
           });
         })
         .catch(error => {
           console.error(error);
-          showError("データ通信に失敗しました。時間をおいて試してください。");
+          showError("データ通信に失敗しました。GASの設定やURLを確認してください。");
         });
     }
 
@@ -203,20 +225,14 @@
             barFillElement.style.width = result.percent + '%';
             const textEl = cardElement.querySelector('.progress-text');
             if (textEl) {
-              const parts = textEl.textContent.split(' ');
-              textEl.textContent = `${parts[0]} (${result.percent}%)`;
+              // 完了件数/総件数の表示更新ロジックを安全に処理
+              fetchTasks(); // 状態を正確に再同期するために再読込を推奨
             }
-            if (result.percent === 100) {
-              barFillElement.classList.add('rainbow-bg');
-            } else {
-              barFillElement.classList.remove('rainbow-bg');
-            }
-            updateMascot(childName, result.percent);
           }
         })
         .catch(err => {
           console.error(err);
-          alert('通信エラーが発生したため、元の状態に戻します。');
+          alert('エラーが発生したため元に戻します。');
           const chk = itemElement.querySelector('input[type="checkbox"]');
           chk.checked = !isChecked;
           if (chk.checked) itemElement.classList.add('checked');
@@ -225,7 +241,7 @@
     }
 
     // ==========================================
-    // 👾 マスコット（ペット・モンスター）制御システム
+    // 👾 マスコット制御システム
     // ==========================================
     function updateMascot(childName, percent) {
       const id = `mascot-${childName}`;
@@ -234,45 +250,38 @@
 
       if (!config) return;
 
-      // 100%達成時のみ表示、それ以外は消去
       if (percent < 100) {
         if (mascot) mascot.remove();
         return;
       }
 
-      if (mascot) return; // すでに画面に存在していれば重複生成しない
+      if (mascot) return;
 
       mascot = document.createElement('img');
       mascot.id = id;
       mascot.className = 'mascot';
       mascot.src = config.img;
       
-      // 最初はランダムな位置にふわっと出現
       mascot.style.left = Math.random() * (window.innerWidth - 60) + 'px';
       mascot.style.top = Math.random() * (window.innerHeight - 100) + 50 + 'px';
       document.body.appendChild(mascot);
 
-      // フェードイン
       setTimeout(() => { mascot.style.opacity = '1'; }, 100);
 
-      // 自律行動AIの実行
       function executeBehavior() {
-        if (!document.getElementById(id)) return; // 画面から消えていたら終了
+        if (!document.getElementById(id)) return;
 
         const currentX = parseFloat(mascot.style.left) || 0;
         const nextX = Math.random() * (window.innerWidth - 60);
         const nextY = Math.random() * (window.innerHeight - 100) + 50;
 
-        // キャラクターの向き反転
         if (nextX < currentX) {
           mascot.style.transform = 'scaleX(-1)';
         } else {
           mascot.style.transform = 'scaleX(1)';
         }
 
-        // 各マスコット特有の動き
         if (config.type === 'steve') {
-          // スティーブ：瞬間移動（テレポート）
           mascot.style.transition = 'opacity 0.3s ease';
           mascot.style.opacity = '0';
           setTimeout(() => {
@@ -283,7 +292,6 @@
           setTimeout(executeBehavior, 4000 + Math.random() * 3000);
           
         } else if (config.type === 'creeper') {
-          // クリーパー：ゆっくり近づき、低確率で点滅爆発寸前になる
           mascot.style.transition = 'left 5s linear, top 5s linear';
           mascot.style.left = nextX + 'px';
           mascot.style.top = nextY + 'px';
@@ -300,7 +308,6 @@
           }, 5200);
 
         } else if (config.type === 'wolf') {
-          // オオカミ：俊敏に動き、たまにお座りして休憩する
           mascot.style.transition = 'left 1.5s ease-out, top 1.5s ease-out';
           mascot.style.left = nextX + 'px';
           mascot.style.top = nextY + 'px';
@@ -318,7 +325,6 @@
         }
       }
 
-      // 行動AIループのトリガー
       setTimeout(executeBehavior, 1000 + Math.random() * 2000);
     }
   </script>
