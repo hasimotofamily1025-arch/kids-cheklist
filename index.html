@@ -9,227 +9,28 @@
   <link rel="manifest" href="data:application/manifest+json,{%22name%22:%22GAS%E3%82%A2%E3%83%96%E3%83%AA%22,%22short_name%22:%22GAS%22,%22start_url%22:%22.%22,%22display%22:%22standalone%22,%22orientation%22:%22portrait%22}">
   <style>
     body { font-family: 'Corporate Logo Medium', 'Noto Sans JP', 'Hiragino Maru Gothic ProN', sans-serif; margin: 0; padding: 20px 20px; user-select: none; overflow-x: hidden; transition: background-color 1s ease; }
-    body.theme-day { background-color: #eef9f1; background-image: linear-gradient(0deg, transparent 24%, rgba(0, 0, 0, 0.02) 25%, rgba(0, 0, 0, 0.02) 26%, transparent 27%, transparent 74%, rgba(0, 0, 0, 0.02) 75%, rgba(0, 0, 0, 0.02) 76%, transparent 77%); background-size: 50px 50px; }
-    .title-container { text-align: center; margin-bottom: 30px; position: relative; }
-    .main-title { font-size: 32px; color: #ff5252; text-shadow: 2px 2px 0 #fff, -2px -2px 0 #fff, 2px -2px 0 #fff, -2px 2px 0 #fff, 4px 4px 0 rgba(0,0,0,0.1); letter-spacing: 4px; margin: 0; font-weight: bold; }
-    .container { display: flex; justify-content: center; gap: 25px; max-width: 1200px; margin: 0 auto; align-items: flex-start; }
-    .card { background: white; border: 4px solid #6d4c41; border-radius: 24px; padding: 20px; width: 320px; box-shadow: 0 12px 0 rgba(109, 76, 65, 0.2); position: relative; transition: transform 0.2s; }
-    .card:hover { transform: translateY(-4px); }
-    .name-badge { background: #6d4c41; color: white; padding: 6px 24px; font-size: 22px; border-radius: 12px; width: fit-content; margin: -35px auto 15px auto; font-weight: bold; box-shadow: 0 4px 0 rgba(0,0,0,0.15); text-align: center; }
-    .avatar-container { width: 140px; height: 140px; border-radius: 50%; border: 4px solid #6d4c41; margin: 0 auto 15px auto; background: #fafafa; display: flex; align-items: center; justify-content: center; position: relative; overflow: visible; box-shadow: inset 0 4px 10px rgba(0,0,0,0.05); }
-    .avatar { width: 110px; height: 110px; object-fit: contain; transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-    .avatar:hover { transform: scale(1.1) rotate(5deg); }
-    .percentage-tag { position: absolute; bottom: 5px; background: #ffd54f; border: 2px solid #6d4c41; padding: 2px 8px; font-size: 12px; border-radius: 10px; font-weight: bold; box-shadow: 0 2px 0 rgba(0,0,0,0.1); }
-    .gauge-bg { background: #e0e0e0; height: 16px; border-radius: 8px; border: 3px solid #6d4c41; margin-bottom: 20px; overflow: hidden; position: relative; }
-    .gauge-fill { background: linear-gradient(90deg, #ff8a65, #ff5252); height: 100%; width: 0%; transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
-    .list-container { border: 3px dashed #bcaaa4; border-radius: 16px; padding: 12px; background: #faf8f7; min-height: 180px; }
-    .task-item { display: flex; align-items: center; padding: 12px 14px; margin-bottom: 10px; background: #eef2f7; border: 2px solid #cfd8dc; border-radius: 14px; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 0 #cfd8dc; }
-    .task-item:last-child { margin-bottom: 0; }
-    .task-item:active { transform: translateY(3px); box-shadow: 0 1px 0 #cfd8dc; }
-    .task-item.checked { background: #c8e6c9; border-color: #81c784; box-shadow: 0 4px 0 #81c784; color: #2e7d32; text-decoration: line-through; }
-    .task-checkbox { width: 22px; height: 22px; margin-right: 12px; border: 2px solid #6d4c41; border-radius: 6px; display: flex; align-items: center; justify-content: center; background: white; flex-shrink: 0; transition: background 0.1s; }
-    .task-item.checked .task-checkbox { background: #4caf50; border-color: #4caf50; }
-    .task-checkbox::after { content: '✔'; color: white; font-size: 14px; display: none; }
-    .task-item.checked .task-checkbox::after { display: block; }
-    .task-text { font-size: 17px; font-weight: bold; word-break: break-all; }
-    .loading-text { text-align: center; color: #8d6e63; font-style: italic; padding: 20px; font-weight: bold; }
-    .mascot { position: absolute; width: 40px; height: 40px; background-size: contain; background-repeat: no-repeat; z-index: 999; pointer-events: none; opacity: 0; }
-    .creeper { background-image: url('https://img.icons8.com/color/48/minecraft-creeper.png'); }
-    @keyframes creeperBlink { 0%, 100% { filter: none; } 50% { filter: brightness(3) sepia(1) hue-rotate(60deg); } }
-    .creeper-blink { animation: creeperBlink 0.3s infinite; }
-    .wolf { background-image: url('https://img.icons8.com/color/48/minecraft-wolf.png'); }
-    .wolf-sit { transform: scaleY(0.7) translateY(10px); }
-  </style>
-</head>
-<body class="theme-day">
-
-  <div class="title-container">
-    <h1 class="main-title">きょうのチェックリスト</h1>
-  </div>
-
-  <div class="container">
-    <div class="card" id="card-花">
-      <div class="name-badge">花</div>
-      <div class="avatar-container">
-        <img class="avatar" id="avatar-花" src="" alt="アバター">
-        <div class="percentage-tag" id="percent-花">0%</div>
-      </div>
-      <div class="gauge-bg"><div class="gauge-fill" id="gauge-花"></div></div>
-      <div class="list-container" id="list-花"><div class="loading-text">よみこみ中...</div></div>
-    </div>
-
-    <div class="card" id="card-碧">
-      <div class="name-badge">碧</div>
-      <div class="avatar-container">
-        <img class="avatar" id="avatar-碧" src="" alt="アバター">
-        <div class="percentage-tag" id="percent-碧">0%</div>
-      </div>
-      <div class="gauge-bg"><div class="gauge-fill" id="gauge-碧"></div></div>
-      <div class="list-container" id="list-碧"><div class="loading-text">よみこみ中...</div></div>
-    </div>
-
-    <div class="card" id="card-瑞">
-      <div class="name-badge">瑞</div>
-      <div class="avatar-container">
-        <img class="avatar" id="avatar-瑞" src="" alt="アバター">
-        <div class="percentage-tag" id="percent-瑞">0%</div>
-      </div>
-      <div class="gauge-bg"><div class="gauge-fill" id="gauge-瑞"></div></div>
-      <div class="list-container" id="list-瑞"><div class="loading-text">よみこみ中...</div></div>
-    </div>
-  </div>
-
-  <script>
-    // 💡 あなたの新しいデプロイURL
-    const GAS_URL = "https://script.google.com/macros/s/AKfycbyOYwwVEvjI23TL0avzF-mt7LEYWETloPvB48vKS7cpqurlcEyLQbCE0yunSwY76ZM/exec";
-
-    // 進化段階ごとの画像リスト（0%, 1~39%, 40~79%, 80~99%, 100%）
-    const evolutionStageImages = [
-      "https://raw.githubusercontent.com/hasimotofamily1025-arch/kids-cheklist/main/images/stage1.png",
-      "https://raw.githubusercontent.com/hasimotofamily1025-arch/kids-cheklist/main/images/stage2.png",
-      "https://raw.githubusercontent.com/hasimotofamily1025-arch/kids-cheklist/main/images/stage3.png",
-      "https://raw.githubusercontent.com/hasimotofamily1025-arch/kids-cheklist/main/images/stage4.png",
-      "https://raw.githubusercontent.com/hasimotofamily1025-arch/kids-cheklist/main/images/stage5.png"
-    ];
-
-    // パーセンテージに応じて画像を切り替える関数
-    function getAvatarByPercent(percent) {
-      if (percent === 0) return evolutionStageImages[0];
-      if (percent < 40) return evolutionStageImages[1];
-      if (percent < 80) return evolutionStageImages[2];
-      if (percent < 100) return evolutionStageImages[3];
-      return evolutionStageImages[4];
-    }
-
-    // 画面上の進捗（％、ゲージ、画像）を完全に連動して更新する関数
-    function renderProgress(child, percent) {
-      document.getElementById(`percent-${child}`).innerText = percent + "%";
-      document.getElementById(`gauge-${child}`).style.width = percent + "%";
-      document.getElementById(`avatar-${child}`).src = getAvatarByPercent(percent);
-    }
-
-    // 初回読み込み処理
-    window.addEventListener('DOMContentLoaded', () => {
-      // 初期化（すべてステージ1の画像にしておく）
-      ['花', '碧', '瑞'].forEach(child => {
-        document.getElementById(`avatar-${child}`).src = evolutionStageImages[0];
-      });
-
-      // GASからデータを取得
-      fetch(GAS_URL)
-        .then(response => response.json())
-        .then(data => {
-          Object.keys(data).forEach(child => {
-            const listContainer = document.getElementById(`list-${child}`);
-            listContainer.innerHTML = ''; 
-
-            const tasks = data[child];
-            if (!tasks || tasks.length === 0) {
-              listContainer.innerHTML = '<div class="loading-text">きょうのタスクはありません</div>';
-              renderProgress(child, 0);
-              return;
-            }
-
-            // 完了したタスクの数を数えて％の初期値を出す
-            let doneCount = 0;
-
-            tasks.forEach(task => {
-              const item = document.createElement('div');
-              item.className = 'task-item';
-              if (task.isChecked) {
-                item.classList.add('checked');
-                doneCount++;
-              }
-
-              item.innerHTML = `
-                <div class="task-checkbox"></div>
-                <div class="task-text">${task.name}</div>
-              `;
-
-              // タスククリック時の処理
-              item.addEventListener('click', () => {
-                const isChecking = !item.classList.contains('checked');
-                
-                // すぐに画面を切り替えて軽快にする（ポジティブレスポンス）
-                item.classList.toggle('checked', isChecking);
-
-                // GASに保存リクエストを送信
-                const payload = { child: child, task: task.name, checked: isChecking };
-                
-                fetch(GAS_URL, {
-                  method: 'POST',
-                  mode: 'no-cors', // CORSエラー防止
-                  body: JSON.stringify(payload)
-                });
-
-                // 画面側でもリアルタイムに進捗を計算して即座に反映
-                const currentChecked = listContainer.querySelectorAll('.task-item.checked').length;
-                const newPercent = Math.round((currentChecked / tasks.length) * 100);
-                renderProgress(child, newPercent);
-              });
-
-              listContainer.appendChild(item);
-            });
-
-            // 初期読み込み時の進捗率を計算して反映
-            const initialPercent = Math.round((doneCount / tasks.length) * 100);
-            renderProgress(child, initialPercent);
-          });
-        })
-        .catch(error => {
-          console.error('Error:', error);
-          alert('スプレッドシートの通信に失敗しました。URLやデプロイ設定を確認してください。');
-        });
-    });
-
-    // ==========================================
-    // 👾 おまけ：ミニマスコットが歩き回る演出
-    // ==========================================
-    function createMascot(config) {
-      const mascot = document.createElement('div');
-      mascot.className = `mascot ${config.type}`;
-      document.body.appendChild(mascot);
-      
-      let currentX = Math.random() * window.innerWidth;
-      let currentY = Math.random() * (window.innerHeight - 100) + 50;
-      mascot.style.left = currentX + 'px';
-      mascot.style.top = currentY + 'px';
-      mascot.style.opacity = '1';
-      
-      function executeBehavior() {
-        const nextX = Math.random() * (window.innerWidth - 60);
-        const nextY = Math.random() * (window.innerHeight - 100) + 50;
-        if (nextX < currentX) { mascot.style.transform = 'scaleX(-1)'; } else { mascot.style.transform = 'scaleX(1)'; }
-        
-        if (config.type === 'creeper') {
-          mascot.style.transition = 'left 5s linear, top 5s linear';
-          mascot.style.left = nextX + 'px';
-          mascot.style.top = nextY + 'px';
-          setTimeout(() => {
-            if (Math.random() < 0.3) {
-              mascot.classList.add('creeper-blink');
-              setTimeout(() => { mascot.classList.remove('creeper-blink'); executeBehavior(); }, 1500);
-            } else { executeBehavior(); }
-          }, 5200);
-        } else if (config.type === 'wolf') {
-          mascot.style.transition = 'left 1.5s ease-out, top 1.5s ease-out';
-          mascot.style.left = nextX + 'px';
-          mascot.style.top = nextY + 'px';
-          setTimeout(() => {
-            if (Math.random() < 0.5) {
-              mascot.classList.add('wolf-sit');
-              setTimeout(() => { mascot.classList.remove('wolf-sit'); executeBehavior(); }, 2500);
-            } else { executeBehavior(); }
-          }, 1700);
-        }
-        currentX = nextX; currentY = nextY;
-      }
-      setTimeout(executeBehavior, 1000);
-    }
-    window.addEventListener('load', () => {
-      createMascot({ type: 'creeper' });
-      createMascot({ type: 'wolf' });
-    });
-  </script>
-</body>
-</html>
+    body.theme-day { background-color: #eef9f1; background-image: linear-gradient(0deg, transparent 24%, rgba(0, 0, 0, 0.02) 25%, rgba(0, 0, 0, 0.02) 26%, transparent 27%, transparent 74%, rgba(0, 0, 0, 0.02) 75%, rgba(0, 0, 0, 0.02) 76%, transparent 77%, transparent), linear-gradient(90deg, transparent 24%, rgba(0, 0, 0, 0.02) 25%, rgba(0, 0, 0, 0.02) 26%, transparent 27%, transparent 74%, rgba(0, 0, 0, 0.02) 75%, rgba(0, 0, 0, 0.02) 76%, transparent 77%, transparent); background-size: 50px 50px; color: #2c3e50; }
+    body.theme-sunset { background-color: #fbeedb; background-image: linear-gradient(0deg, transparent 24%, rgba(211, 84, 0, 0.02) 25%, rgba(211, 84, 0, 0.02) 26%, transparent 27%, transparent 74%, rgba(211, 84, 0, 0.02) 75%, rgba(211, 84, 0, 0.02) 76%, transparent 77%, transparent), linear-gradient(90deg, transparent 24%, rgba(211, 84, 0, 0.02) 25%, rgba(211, 84, 0, 0.02) 26%, transparent 27%, transparent 74%, rgba(211, 84, 0, 0.02) 75%, rgba(211, 84, 0, 0.02) 76%, transparent 77%, transparent); background-size: 50px 50px; color: #4a2700; }
+    body.theme-night { background-color: #1a1c2e; background-image: linear-gradient(0deg, transparent 24%, rgba(255, 255, 255, 0.01) 25%, rgba(255, 255, 255, 0.01) 26%, transparent 27%, transparent 74%, rgba(255, 255, 255, 0.01) 75%, rgba(255, 255, 255, 0.01) 76%, transparent 77%, transparent), linear-gradient(90deg, transparent 24%, rgba(255, 255, 255, 0.01) 25%, rgba(255, 255, 255, 0.01) 26%, transparent 27%, transparent 74%, rgba(255, 255, 255, 0.01) 75%, rgba(255, 255, 255, 0.01) 76%, transparent 77%, transparent); background-size: 50px 50px; color: #ecf0f1; }
+    h1 { text-align: center; font-size: 24px; margin-bottom: 20px; text-shadow: 1px 1px 2px rgba(0,0,0,0.1); }
+    body.theme-night h1 { text-shadow: 1px 1px 4px rgba(0,0,0,0.6); }
+    #cards-container { display: flex; flex-direction: column; gap: 20px; max-width: 500px; margin: 0 auto; padding-bottom: 60px; position: relative; z-index: 10; }
+    .card { background: rgba(255, 255, 255, 0.85); border-radius: 16px; padding: 16px; box-shadow: 0 8px 24px rgba(149, 157, 165, 0.15); border: 2px solid rgba(255,255,255,0.7); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); transition: transform 0.3s ease, box-shadow 0.3s ease; }
+    body.theme-night .card { background: rgba(44, 62, 80, 0.85); border-radius: 16px; padding: 16px; box-shadow: 0 8px 24px rgba(0,0,0,0.4); border: 2px solid rgba(255,255,255,0.05); }
+    .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+    .child-name { font-size: 20px; font-weight: bold; }
+    .progress-text { font-size: 14px; font-weight: bold; opacity: 0.8; }
+    .progress-bar-bg { background: #e0e0e0; border-radius: 8px; height: 14px; width: 100%; overflow: hidden; margin-bottom: 16px; box-shadow: inset 0 1px 3px rgba(0,0,0,0.1); }
+    body.theme-night .progress-bar-bg { background: #4f5d6c; }
+    .progress-bar-fill { height: 100%; width: 0%; background: linear-gradient(90deg, #4caf50, #8bc34a); border-radius: 8px; transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
+    .rainbow-bg { background: linear-gradient(90deg, #ff6b6b, #feca57, #1dd1a1, #10ac84, #54a0ff, #5f27cd, #ff6b6b); background-size: 200% auto; animation: rainbow 3s linear infinite; }
+    @keyframes rainbow { 0% { background-position: 0% center; } 100% { background-position: 200% center; } }
+    .task-list { display: flex; flex-direction: column; gap: 10px; }
+    .task-item { display: flex; align-items: center; gap: 12px; padding: 10px 14px; background: rgba(255,255,255,0.9); border-radius: 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.02); cursor: pointer; transition: background 0.2s, opacity 0.2s; position: relative; }
+    body.theme-night .task-item { background: rgba(52, 73, 94, 0.9); color: #ecf0f1; }
+    .task-item input[type="checkbox"] { width: 20px; height: 20px; cursor: pointer; accent-color: #4caf50; }
+    .task-item.checked { opacity: 0.6; background: #f1f2f6; text-decoration: line-through; }
+    body.theme-night .task-item.checked { background: #2c3e50; opacity: 0.4; }
+    #loading, #error-message { text-align: center; font-weight: bold; margin-top: 40px; font-size: 16px; }
+    #error-message { color: #e74c3c; display: none; background: #fadbd8; padding: 12px; border-radius: 8px; max-width: 400px; margin: 20px auto; }
+    .mascot { position: fixed; width: 45px; height: 45px; pointer-events: none; z-index: 100; opacity: 0; transition: transform 0.2s linear; image
