@@ -132,19 +132,26 @@
           const childrenKeys = ['花', '碧', '瑞'];
           
           childrenKeys.forEach(key => {
-            const currentPercent = data.progress ? (data.progress[key] || 0) : 0;
+            // GASからその子の塊（オブジェクト）を安全に取得
+            const childData = data[key] || { tasks: [], percent: 0 };
+            
+            // その子の％（進捗）を安全に反映
+            const currentPercent = childData.percent || 0;
             updateEvolutionUI(key, currentPercent, false);
             
             const container = document.getElementById('tasks-' + key);
             if (!container) return;
             container.innerHTML = '';
             
-            const childTasks = data[key] || [];
+            // その子のタスク配列（tasks）を正確に取得
+            const childTasks = childData.tasks || [];
             if (childTasks.length === 0) {
               container.innerHTML = '<div style="color:#a0aec0; text-align:center; margin-top:20px;">きょうのクエストはありません</div>';
             } else {
               childTasks.forEach(task => {
-                const isCheckedStr = task.isChecked ? 'checked' : ''; 
+                // GAS側の変数名「isDone」と「isChecked」のどちらが来ても安全に吸収する設計
+                const hasChecked = task.isChecked || task.isDone;
+                const isCheckedStr = hasChecked ? 'checked' : ''; 
                 container.innerHTML += `
                   <label class="task-item">
                     <input type="checkbox" ${isCheckedStr} onchange="toggleTask('${key}', '${task.name}', this.checked)">
